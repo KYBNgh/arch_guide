@@ -13,7 +13,7 @@
 
 # Arch Linux 全盘加密安装指南
 
-> [!NOTE] 技术栈
+> [!NOTE]
 > 固件: UEFI
 > 引导加载器: systemd-boot
 > 文件系统: LUKS, btrfs
@@ -28,7 +28,7 @@
 - `Rufus` （Microsoft Windows）
 - `ventoy` （全平台通用）
 
-> [!IMPORTANT] 劝退
+> [!IMPORTANT]
 > 如果你不知道如何制作启动介质，也许你不应该现在尝试安装 Arch Linux
 > 最好去选择一个新手友好的发行版: Fedora、Linux Mint
 
@@ -40,7 +40,7 @@
  - 在 `安全` 选项卡将 `操作系统类型` 改为 `其他操作系统`
  - 在 `安全` 选项卡中的 `密钥管理` 内 `删除所有PK`
 
-> [!TIP] 启动菜单
+> [!TIP]
  Arch ISO 是Legacy BIOS + UEFI 双启动
  Legacy BIOS 用的是 `GRUB` （较精美的启动菜单）
  UEFI 用的是 `systemd-boot` （黑底白字）
@@ -97,7 +97,7 @@ sda            8:0    0 119.2G  0 disk
 我有一块 `SATA SSD`，设备名为 `sda`，即第一块 `SCSI 子系统` 管理的磁盘
 若你的磁盘是 `nvme SSD`，设备名可能为 `nvme0n1`，即第一个 `NVMe 控制器` 上的第一个 `命名空间`
 
-> [!NOTE] 命名规则
+> [!NOTE]
 > `nvme0` 指第一个 `NVMe 控制器`， `n1` 指第一个命名空间
 > 消费级 `NVMe` 磁盘一般只有一个命名空间
 > 若你有两块 `NVMe` 磁盘，则存在 `nvme0n1`、`nvme1n1` 
@@ -117,7 +117,7 @@ sda            8:0    0 119.2G  0 disk
 
 ### 2.2 使用 `fdisk` 进行分区
 
-> [!CAUTION] 摧毁数据
+> [!CAUTION]
 > 确认重要数据已转移
 > 分区操作**不可撤销**
 
@@ -170,7 +170,7 @@ Syncing disks.
 
 格式化 `/dev/sda2` 为 LUKS 容器，输入密码
 
-> [!IMPORTANT] LUKS密码
+> [!IMPORTANT]
 > LUKS **没有**找回密码的功能，忘了数据就丢了
 > LUKS 支持用文件作为密钥
 
@@ -281,7 +281,7 @@ pacman -Syy
 使用 `pacstrap` 安装最小系统，`-K` 选项表示初始化密钥
 内核、头文件、编辑器任选其一
 
-> [!NOTE] 软件包
+> [!NOTE]
 > **基础系统**
 > - `base` `base-devel` `cryptsetup`
 > - `btrfs-progs` `zram-generator`
@@ -298,7 +298,7 @@ pacman -Syy
 > - 编辑器: `vim` / `neovim` / `emacs`
 > - 建议: `bash-completion` `man-db` 
 
-> [!TIP] 固件包
+> [!]
 > `linux-firmware` 是元包（meta package），以依赖的形式安装以下软件包:
 > 
 > - `linux-firmware-amdgpu` / `linux-firmware-radeon`（AMD 显卡）
@@ -379,15 +379,20 @@ echo 'arch-desk' > /etc/hostname
 
 我采用 `systemd` 的 `initramfs` 方案
 
- > [!ABSTRACT] 传统派的  HOOKS
+ > [!IMPORTANT]
+ > **传统派的 HOOKS**
  >`udev` `consolefont`  `encrypt`
  >```conf
-HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt filesystems fsck)
+ > HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt filesystems fsck)
+ >```
 
- > [!ABSTRACT] systemd 派的 HOOKS
+
+ > [!IMPORTANT]
+ > **systemd 派的 HOOKS**
 `systemd` `sd-vconsole` `sd-encrypt`
 >```conf
-HOOKS=(base systemd autodetect microcode modconf kms keyboard keymap sd-vconsole block sd-encrypt filesystems fsck)
+> HOOKS=(base systemd autodetect microcode modconf kms keyboard keymap sd-vconsole block sd-encrypt filesystems fsck)
+>```
 
 > [!WARNING]
 > Arch Linux 中，base 后默认是 systemd
@@ -409,7 +414,7 @@ KEYMAP=us
 FONT=ter-132b
 ```
 
-编辑 `/etc/mkinitcpio.conf` 和修改 `/etc/vconsole.conf` 后，要重新生成`initramfs`
+编辑 `/etc/mkinitcpio.conf` 或修改 `/etc/vconsole.conf` 后，需重新生成`initramfs`
 
 ```bash
 mkinitcpio -P
@@ -417,7 +422,7 @@ mkinitcpio -P
 
 默认地，SSD 的 `TRIM`  请求被 `LUKS` 拦截，SSD 无法回收空闲块，长期使用后性能下降
 编辑 `/etc/crypttab` 加 `discard` 参数，允许透传 TRIM 指令
-这会暴露加密块的空闲状态，可能降低安全性，我可接受
+这会暴露加密块的空闲状态，可能降低安全性，一般可接受
 
 ```conf
 cryptsys UUID=</dev/sda2 的 UUID> none luks,discard
