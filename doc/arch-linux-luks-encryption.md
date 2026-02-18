@@ -62,11 +62,11 @@ ls /sys/firmware/efi
 以 `Arch ISO`内`systemd-boot` 启动菜单的第一项启动: 
 
 ```console
-Arch Linux install medium (x86_64，UEFI)
+	Arch Linux install medium (x86_64，UEFI)
 Arch Linux install medium (x86_64，UEFI) with speech
-				Memtest86+			
-				EFI Shell			
-		Reboot into firmware Interface
+			Memtest86+			
+			EFI Shell			
+	Reboot into firmware Interface
 ```
 ### 1.4 环境配置
 
