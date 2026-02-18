@@ -9,11 +9,11 @@
 - **内存** Kingston 8G
 - **网卡** 主板内置，有线网络
 - **磁盘** Sandisk SATA SSD 120G
-___
+---
 
 # Arch Linux 全盘加密安装指南
 
-> [!INFO] 技术栈
+> [!NOTE] 技术栈
 > 固件: UEFI
 > 引导加载器: systemd-boot
 > 文件系统: LUKS, btrfs
@@ -28,7 +28,7 @@ ___
 - `Rufus` （Microsoft Windows）
 - `ventoy` （全平台通用）
 
-> [!WARNING] 新手劝退
+> [!IMPORTANT] 劝退
 > 如果你不知道如何制作启动介质，也许你不应该现在尝试安装 Arch Linux
 > 最好去选择一个新手友好的发行版: Fedora、Linux Mint
 
@@ -40,7 +40,7 @@ ___
  - 在 `安全` 选项卡将 `操作系统类型` 改为 `其他操作系统`
  - 在 `安全` 选项卡中的 `密钥管理` 内 `删除所有PK`
 
-> [!TIP]
+> [!TIP] 启动菜单
  Arch ISO 是Legacy BIOS + UEFI 双启动
  Legacy BIOS 用的是 `GRUB` （较精美的启动菜单）
  UEFI 用的是 `systemd-boot` （黑底白字）
@@ -62,11 +62,11 @@ ls /sys/firmware/efi
 以 `Arch ISO`内`systemd-boot` 启动菜单的第一项启动: 
 
 ```console
-			Arch Linux install medium (x86_64，UEFI)
-	Arch Linux install medium (x86_64，UEFI) with speech
-						Memtest86+			
-						EFI Shell			
-				Reboot into firmware Interface
+Arch Linux install medium (x86_64，UEFI)
+Arch Linux install medium (x86_64，UEFI) with speech
+				Memtest86+			
+				EFI Shell			
+		Reboot into firmware Interface
 ```
 ### 1.4 环境配置
 
@@ -117,9 +117,9 @@ sda            8:0    0 119.2G  0 disk
 
 ### 2.2 使用 `fdisk` 进行分区
 
-> [!DANGER] 
-> 请确认重要数据已转移
-> 分区操作不可撤销
+> [!CAUTION] 摧毁数据
+> 确认重要数据已转移
+> 分区操作**不可撤销**
 
 ```sh
 fdisk /dev/sda
@@ -168,22 +168,23 @@ Syncing disks.
 
 ### 2.3 创建加密容器
 
-> [!WARNING] 
-> LUKS容器没有后门，一旦忘记密码，**数据永久丢失**。请 **牢记密码** 、设置 **强密码** 防止破解
+格式化 `/dev/sda2` 为 LUKS 容器，输入密码
 
-格式化 `/dev/sda2` 为 LUKS 容器
+> [!IMPORTANT] LUKS密码
+> LUKS **没有**找回密码的功能，忘了数据就丢了
+> LUKS 支持用文件作为密钥
 
 ```sh
 cryptsetup luksFormat /dev/sda2
 ```
 
-映射 LUKS 容器。请为它起个名字。此处使用 `cryptsys`
+映射 LUKS 容器。起个名字，例如 `cryptsys`
 
 ```sh
 cryptsetup open /dev/sda2 cryptsys
 ```
 
-使用 `lsblk` 查看磁盘（此处省略部分输出）
+使用 `lsblk` 查看磁盘
 
 ```console
 NAME         MAJ:MIN RM   SIZE RO TYPE  MOUNTPOINTS
@@ -195,7 +196,7 @@ sda            8:0    0 119.2G  0 disk
 
 ### 2.4 格式化文件系统
 
-此处的 `-L` 指定 `label` 即 `标签`，这是可有可无的参数
+此处的 `-L` 指定 `label`（`标签`），这是可有可无的
 `UEFI` 固件只识别 `FAT32` 格式的文件系统
 
 ```sh
@@ -230,7 +231,7 @@ umount /mnt
 
 ### 2.6 挂载 `btrfs` 子卷与 `ESP`
 
-我的硬盘是 SATA SSD，添加 `ssd` 挂载选项
+添加 `ssd` 挂载选项
 genfstab 默认就有 `space_cache=v2` `discard=async` ，无需手动设置
 
 ```sh
@@ -280,7 +281,7 @@ pacman -Syy
 使用 `pacstrap` 安装最小系统，`-K` 选项表示初始化密钥
 内核、头文件、编辑器任选其一
 
-> [!EXAMPLE] 软件包
+> [!NOTE] 软件包
 > **基础系统**
 > - `base` `base-devel` `cryptsetup`
 > - `btrfs-progs` `zram-generator`
@@ -297,7 +298,7 @@ pacman -Syy
 > - 编辑器: `vim` / `neovim` / `emacs`
 > - 建议: `bash-completion` `man-db` 
 
-> [!TIP] 固件包说明
+> [!TIP] 固件包
 > `linux-firmware` 是元包（meta package），以依赖的形式安装以下软件包:
 > 
 > - `linux-firmware-amdgpu` / `linux-firmware-radeon`（AMD 显卡）
