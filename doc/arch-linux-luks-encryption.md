@@ -298,7 +298,7 @@ pacman -Syy
 > - 编辑器: `vim` / `neovim` / `emacs`
 > - 建议: `bash-completion` `man-db` 
 
-> [!]
+> [!TIP]
 > `linux-firmware` 是元包（meta package），以依赖的形式安装以下软件包:
 > 
 > - `linux-firmware-amdgpu` / `linux-firmware-radeon`（AMD 显卡）
